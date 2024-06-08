@@ -1,8 +1,17 @@
 #include "cuckoohash.h"
 
 CuckooHash::CuckooHash(size_t size) : size(size), currentSize(0) {
-    table1 = vector<int>(size, -1);
-    table2 = vector<int>(size, -1);
+    table1 = new int[size];
+    table2 = new int[size];
+    for (size_t i = 0; i < size; ++i) {
+        table1[i] = -1;
+        table2[i] = -1;
+    }
+}
+
+CuckooHash::~CuckooHash() {
+    delete[] table1;
+    delete[] table2;
 }
 
 int CuckooHash::hashFunction1(int key) {
@@ -44,8 +53,13 @@ bool CuckooHash::search(int key, int& value) {
     int hash1 = hashFunction1(key);
     int hash2 = hashFunction2(key);
 
-    if (table1[hash1] == key || table2[hash2] == key) {
-        value = (table1[hash1] == key) ? table1[hash1] : table2[hash2];
+    if (table1[hash1] == key) {
+        value = table1[hash1];
+        return true;
+    }
+
+    if (table2[hash2] == key) {
+        value = table2[hash2];
         return true;
     }
     return false;
@@ -107,7 +121,9 @@ void CuckooHash::addToTable(int liczba) {
 }
 
 void CuckooHash::clear() {
-    table1 = vector<int>(size, -1);
-    table2 = vector<int>(size, -1);
+    for (size_t i = 0; i < size; ++i) {
+        table1[i] = -1;
+        table2[i] = -1;
+    }
     currentSize = 0;
 }
