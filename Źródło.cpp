@@ -1,5 +1,8 @@
 #include "Separatechaining.h"
 #include "Openchaining.h"
+#include "cuckoohash.h"
+
+#include <conio.h>
 
 void wyczysc() {
 #ifdef _WIN32
@@ -25,11 +28,11 @@ void firstmenu() {
     cout << "-----------------------------------" << endl;
     cout << "WITAJ! WYBIERZ RODZAJ TABLICY MIESZAJAJACEJ" << endl;
     cout << "-----------------------------------" << endl;
-        cout << "1. ADRESOWANIE OTWARTE" << endl;
-        cout << "2. ADRESOWANIE ZAMKNIETE Z DRZEWEM ZBALANSOWANYM BST" << endl;
-        cout << "3. CUCKOO HASHING" << endl;
-        cout << "4. ZAKONCZ" << endl;
-        cout << "WYBOR: ";
+    cout << "1. ADRESOWANIE OTWARTE" << endl;
+    cout << "2. ADRESOWANIE ZAMKNIETE Z DRZEWEM ZBALANSOWANYM BST" << endl;
+    cout << "3. CUCKOO HASHING" << endl;
+    cout << "4. ZAKONCZ" << endl;
+    cout << "WYBOR: ";
 }
 void secondmenu() {
     cout << "PO PROSTU WYBIERZ ROZMIAR SWOJEJ TABLICY!!!" << endl;
@@ -56,11 +59,12 @@ void thirdmenu() {
 int main() {
     Openchaining openchaining;
     Separatechaining separatechaining(20);
+    CuckooHash cuckooHash(10); // Change the size as needed
     srand(time(NULL));
-    int wybor, wybor2, wybor3, size=0;
+    int wybor, wybor2, wybor3, size = 0;
     do {
         firstmenu();
-        cin>> wybor;
+        cin >> wybor;
         if (wybor != 4) {
             wyczysc();
             secondmenu();
@@ -82,63 +86,63 @@ int main() {
             uniform_int_distribution<> disValue(0, size * 2);
             switch (wybor) {
             case 1:
-                    if (wybor2 == 9) {
-                        int demo, demoremove, demokey, demovalue;
-                        cout << "PODAJ ILOSC DANYCH: ";
-                        cin >> demo;
-                        openchaining.addToTable(demo);
-                        openchaining.display();
-                        cout << "PODAJ KLUCZ DO USUNIECIA: ";
-                        cin >> demoremove;
-                        cout << "PODAJ KLUCZ I WARTOSC DO DODANIA: ";
-                        cin >> demokey >> demovalue;
-                        openchaining.remove(demoremove);
-                        openchaining.insert(demokey, demovalue);
-                        openchaining.display();
-                        openchaining.deleteTable();
-                        _getch();
-                        wyczysc();
+                if (wybor2 == 9) {
+                    int demo, demoremove, demokey, demovalue;
+                    cout << "PODAJ ILOSC DANYCH: ";
+                    cin >> demo;
+                    openchaining.addToTable(demo);
+                    openchaining.display();
+                    cout << "PODAJ KLUCZ DO USUNIECIA: ";
+                    cin >> demoremove;
+                    cout << "PODAJ KLUCZ I WARTOSC DO DODANIA: ";
+                    cin >> demokey >> demovalue;
+                    openchaining.remove(demoremove);
+                    openchaining.insert(demokey, demovalue);
+                    openchaining.display();
+                    openchaining.deleteTable();
+                    _getch();
+                    wyczysc();
 
-                    }
-                    else {
-                        do {
-                            thirdmenu();
-                            cin >> wybor3;
+                }
+                else {
+                    do {
+                        thirdmenu();
+                        cin >> wybor3;
+                        wyczysc();
+                        if (wybor3 == 1) {
+                            vector <float> czasy;
+                            for (int i = 0; i < 50; i++) {
+                                openchaining.addToTable(size);
+                                auto start = chrono::high_resolution_clock::now();
+                                openchaining.insert(disKey(gen), disValue(gen));
+                                auto end = chrono::high_resolution_clock::now();
+                                auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start);
+                                czasy.push_back(duration.count());
+                                openchaining.deleteTable();
+                            }
+                            add_to_file("openinsert.csv", czasy);
+                            vector<float>().swap(czasy);
+                            _getch();
                             wyczysc();
-                            if (wybor3 == 1) {
-                                vector <float> czasy;
-                                for (int i = 0; i < 50; i++) {
-                                    openchaining.addToTable(size);
-                                    auto start = chrono::high_resolution_clock::now();
-                                    openchaining.insert(disKey(gen), disValue(gen));
-                                    auto end = chrono::high_resolution_clock::now();
-                                    auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start);
-                                    czasy.push_back(duration.count());
-                                    openchaining.deleteTable();
-                                }
-                                add_to_file("openinsert.csv", czasy);
-                                vector<float>().swap(czasy);
-                                _getch();
-                                wyczysc();
+                        }
+                        else if (wybor3 == 2) {
+                            vector <float> czasy;
+                            for (int i = 0; i < 50; i++) {
+                                openchaining.addToTable(size);
+                                auto start = chrono::high_resolution_clock::now();
+                                openchaining.remove(openchaining.r);
+                                auto end = chrono::high_resolution_clock::now();
+                                auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start);
+                                czasy.push_back(duration.count());
+                                openchaining.deleteTable();
                             }
-                            else if (wybor3 == 2) {
-                                vector <float> czasy;
-                                for (int i = 0; i < 50; i++) {
-                                    openchaining.addToTable(size);
-                                    auto start = chrono::high_resolution_clock::now();
-                                    openchaining.remove(openchaining.r);
-                                    auto end = chrono::high_resolution_clock::now();
-                                    auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start);
-                                    czasy.push_back(duration.count());
-                                    openchaining.deleteTable();
-                                }
-                                add_to_file("openremove.csv", czasy);
-                                vector<float>().swap(czasy);
-                                _getch();
-                                wyczysc();
-                            }
-                        } while (wybor3 != 3);
-                    } break;
+                            add_to_file("openremove.csv", czasy);
+                            vector<float>().swap(czasy);
+                            _getch();
+                            wyczysc();
+                        }
+                    } while (wybor3 != 3);
+                } break;
             case 2:
                 if (wybor2 == 9) {
                     int demo, demoremove, demokey, demovalue;
@@ -197,11 +201,67 @@ int main() {
                     } while (wybor3 != 3);
                 }
                 break;
-            case 3: break;
+            case 3:
+                if (wybor2 == 9) {
+                    int demo, demoremove, demokey, demovalue;
+                    cout << "PODAJ ILOSC DANYCH: ";
+                    cin >> demo;
+                    cuckooHash.addToTable(demo);
+                    cuckooHash.display();
+                    cout << "PODAJ KLUCZ DO USUNIECIA: ";
+                    cin >> demoremove;
+                    cout << "PODAJ KLUCZ I WARTOSC DO DODANIA: ";
+                    cin >> demokey >> demovalue;
+                    cuckooHash.remove(demoremove);
+                    cuckooHash.insert(demokey, demovalue);
+                    cuckooHash.display();
+                    cuckooHash.clear();
+                    _getch();
+                    wyczysc();
+
+                }
+                else {
+                    do {
+                        thirdmenu();
+                        cin >> wybor3;
+                        wyczysc();
+                        if (wybor3 == 1) {
+                            vector <float> czasy;
+                            for (int i = 0; i < 50; i++) {
+                                cuckooHash.addToTable(size);
+                                auto start = chrono::high_resolution_clock::now();
+                                cuckooHash.insert(disKey(gen), disValue(gen));
+                                auto end = chrono::high_resolution_clock::now();
+                                auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start);
+                                czasy.push_back(duration.count());
+                                cuckooHash.clear();
+                            }
+                            add_to_file("cuckooinsert.csv", czasy);
+                            vector<float>().swap(czasy);
+                            _getch();
+                            wyczysc();
+                        }
+                        else if (wybor3 == 2) {
+                            vector <float> czasy;
+                            for (int i = 0; i < 50; i++) {
+                                cuckooHash.addToTable(size);
+                                auto start = chrono::high_resolution_clock::now();
+                                cuckooHash.remove(cuckooHash.r);
+                                auto end = chrono::high_resolution_clock::now();
+                                auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start);
+                                czasy.push_back(duration.count());
+                                cuckooHash.clear();
+                            }
+                            add_to_file("cuckooremove.csv", czasy);
+                            vector<float>().swap(czasy);
+                            _getch();
+                            wyczysc();
+                        }
+                    } while (wybor3 != 3);
+                } break;
             }
         }
     } while (wybor != 4);
-   
 
     return 0;
 }
