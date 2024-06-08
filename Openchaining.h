@@ -7,6 +7,7 @@
 #include <ctime>
 #include <random>
 #include <vector>
+#include <conio.h>
 
 using namespace std;
 const int TABLE_SIZE = 10;
