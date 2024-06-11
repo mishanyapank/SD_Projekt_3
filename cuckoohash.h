@@ -10,10 +10,11 @@ using namespace std;
 class CuckooHash {
 private:
     size_t size;
-    int* table1;
-    int* table2;
+    pair<int, int>* table1;
+    pair<int, int>* table2;
     int hashFunction1(int key);
     int hashFunction2(int key);
+    void resizeTable();
 
 public:
     int currentSize, r, s;
@@ -28,3 +29,4 @@ public:
 };
 
 #endif
+
