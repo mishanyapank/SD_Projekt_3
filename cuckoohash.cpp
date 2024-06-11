@@ -4,8 +4,8 @@ CuckooHash::CuckooHash(size_t size) : size(size), currentSize(0) {
     table1 = new pair<int, int>[size];
     table2 = new pair<int, int>[size];
     for (size_t i = 0; i < size; ++i) {
-        table1[i] = {-1, -1};
-        table2[i] = {-1, -1};
+        table1[i] = { -1, -1 };
+        table2[i] = { -1, -1 };
     }
 }
 
@@ -24,15 +24,15 @@ int CuckooHash::hashFunction2(int key) {
 
 void CuckooHash::resizeTable() {
     int oldSize = size;
-    size *= 2;
+    size = static_cast<int>(size * 1.5); // Resize by 1.5x
     pair<int, int>* oldTable1 = table1;
     pair<int, int>* oldTable2 = table2;
     table1 = new pair<int, int>[size];
     table2 = new pair<int, int>[size];
 
     for (size_t i = 0; i < size; ++i) {
-        table1[i] = {-1, -1};
-        table2[i] = {-1, -1};
+        table1[i] = { -1, -1 };
+        table2[i] = { -1, -1 };
     }
 
     currentSize = 0;
@@ -51,7 +51,7 @@ void CuckooHash::resizeTable() {
 }
 
 bool CuckooHash::insert(int key, int value) {
-    if (currentSize >= (size * 0.7)) {
+    if (currentSize >= (size * 0.5)) { // Resize if more than 50% full
         resizeTable();
     }
 
@@ -60,19 +60,21 @@ bool CuckooHash::insert(int key, int value) {
 
     for (int i = 0; i < size; ++i) {
         if (table1[hash1].first == -1) {
-            table1[hash1] = {key, value};
+            table1[hash1] = { key, value };
             ++currentSize;
             return true;
-        } else if (table2[hash2].first == -1) {
-            table2[hash2] = {key, value};
+        }
+        else if (table2[hash2].first == -1) {
+            table2[hash2] = { key, value };
             ++currentSize;
             return true;
-        } else {
+        }
+        else {
             swap(key, table1[hash1].first);
             swap(value, table1[hash1].second);
             hash1 = hashFunction2(key);
             if (table2[hash1].first == -1) {
-                table2[hash1] = {key, value};
+                table2[hash1] = { key, value };
                 ++currentSize;
                 return true;
             }
@@ -82,7 +84,8 @@ bool CuckooHash::insert(int key, int value) {
         }
     }
 
-    return false;
+    resizeTable();
+    return insert(key, value);
 }
 
 bool CuckooHash::search(int key, int& value) {
@@ -107,13 +110,13 @@ bool CuckooHash::remove(int key) {
     int hash2 = hashFunction2(key);
 
     if (table1[hash1].first == key) {
-        table1[hash1] = {-1, -1};
+        table1[hash1] = { -1, -1 };
         --currentSize;
         return true;
     }
 
     if (table2[hash2].first == key) {
-        table2[hash2] = {-1, -1};
+        table2[hash2] = { -1, -1 };
         --currentSize;
         return true;
     }
@@ -155,7 +158,8 @@ void CuckooHash::addToTable(int liczba) {
         int randvalue = disValue(gen);
         if (toremove == i) {
             r = randkey;
-        } else if (tosearch == i) {
+        }
+        else if (tosearch == i) {
             s = randkey;
         }
         insert(randkey, randvalue);
@@ -164,9 +168,8 @@ void CuckooHash::addToTable(int liczba) {
 
 void CuckooHash::clear() {
     for (size_t i = 0; i < size; ++i) {
-        table1[i] = {-1, -1};
-        table2[i] = {-1, -1};
+        table1[i] = { -1, -1 };
+        table2[i] = { -1, -1 };
     }
     currentSize = 0;
 }
-
