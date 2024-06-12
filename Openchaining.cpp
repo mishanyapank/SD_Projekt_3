@@ -1,16 +1,16 @@
 #include "Openchaining.h"
 
-// Konstruktor inicjalizuj¹cy tablicê mieszaj¹c¹
+// Konstruktor inicjalizujÄ…cy tablicÄ™ mieszajÄ…cÄ…
 Openchaining::Openchaining() : tableSize(TABLE_SIZE), currentSize(0) {
     table = new HashNode[tableSize];
 }
 
-// Destruktor zwalniaj¹cy pamiêæ
+// Destruktor zwalniajÄ…cy pamiÄ™Ä‡
 Openchaining::~Openchaining() {
     delete[] table;
 }
 
-// Funkcja mieszaj¹ca
+// Funkcja mieszajÄ…ca
 int Openchaining::hashFunction(int key) {
     return key % tableSize;
 }
@@ -23,6 +23,7 @@ void Openchaining::resizeTable() {
     table = new HashNode[tableSize];
     currentSize = 0;
 
+    // Przeniesienie istniejÄ…cych elementÃ³w do nowej tablicy
     for (int i = 0; i < oldSize; ++i) {
         if (oldTable[i].occupied) {
             insert(oldTable[i].key, oldTable[i].value);
@@ -32,24 +33,25 @@ void Openchaining::resizeTable() {
     delete[] oldTable;
 }
 
-// Wstawianie pary klucz-wartoœæ do tablicy
+// Wstawianie pary klucz-wartoÅ›Ä‡ do tablicy
 bool Openchaining::insert(int key, int value) {
-    if (currentSize >= (tableSize * 0.7)) {
+    if (currentSize >= (tableSize * 0.7)) { // ZwiÄ™kszenie rozmiaru tablicy jeÅ›li jest peÅ‚na
         resizeTable();
     }
 
     int hash = hashFunction(key);
     int originalHash = hash;
 
+    // Wstawianie elementu do tablicy przy uÅ¼yciu liniowego prÃ³bkowania
     while (table[hash].occupied) {
         if (table[hash].key == key) {
-            // Aktualizacja istniej¹cej wartoœci
+            // Aktualizacja istniejÄ…cej wartoÅ›ci
             table[hash].value = value;
             return true;
         }
         hash = (hash + 1) % tableSize; // Linear probing
         if (hash == originalHash) {
-            // Tablica jest pe³na
+            // Tablica jest peÅ‚na
             return false;
         }
     }
@@ -61,7 +63,7 @@ bool Openchaining::insert(int key, int value) {
     return true;
 }
 
-// Dodawanie losowych par klucz-wartoœæ do tablicy
+// Dodawanie losowych par klucz-wartoÅ›Ä‡ do tablicy
 void Openchaining::addToTable(int liczba) {
     set<int> uniqueKeys;
     int randkey;
@@ -88,11 +90,12 @@ void Openchaining::addToTable(int liczba) {
     }
 }
 
-// Szukanie wartoœci na podstawie klucza
+// Szukanie wartoÅ›ci na podstawie klucza
 bool Openchaining::find(int key, int& value) {
     int hash = hashFunction(key);
     int originalHash = hash;
 
+    // Szukanie elementu przy uÅ¼yciu liniowego prÃ³bkowania
     while (table[hash].occupied) {
         if (table[hash].key == key) {
             value = table[hash].value;
@@ -101,7 +104,7 @@ bool Openchaining::find(int key, int& value) {
         }
         hash = (hash + 1) % tableSize; // Linear probing
         if (hash == originalHash) {
-            // Przeszliœmy przez ca³¹ tablicê
+            // PrzeszliÅ›my przez caÅ‚Ä… tablicÄ™
             return false;
         }
     }
@@ -113,6 +116,7 @@ bool Openchaining::remove(int key) {
     int hash = hashFunction(key);
     int originalHash = hash;
 
+    // Usuwanie elementu przy uÅ¼yciu liniowego prÃ³bkowania
     while (table[hash].occupied) {
         if (table[hash].key == key) {
             table[hash].occupied = false;
@@ -122,14 +126,14 @@ bool Openchaining::remove(int key) {
         }
         hash = (hash + 1) % tableSize; // Linear probing
         if (hash == originalHash) {
-            // Przeszliœmy przez ca³¹ tablicê
+            // PrzeszliÅ›my przez caÅ‚Ä… tablicÄ™
             return false;
         }
     }
     return false;
 }
 
-// Wyœwietlanie zawartoœci tablicy mieszaj¹cej
+// WyÅ›wietlanie zawartoÅ›ci tablicy mieszajÄ…cej
 void Openchaining::display() {
     for (int i = 0; i < tableSize; ++i) {
         if (table[i].occupied) {
