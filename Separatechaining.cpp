@@ -1,5 +1,6 @@
 #include "Separatechaining.h"
 
+// Konstruktor inicjalizujący tablicę mieszającą
 Separatechaining::Separatechaining(int capacity) : capacity(capacity), elements(0) {
     table = new BSTNode * [capacity];
     for (int i = 0; i < capacity; ++i) {
@@ -7,6 +8,7 @@ Separatechaining::Separatechaining(int capacity) : capacity(capacity), elements(
     }
 }
 
+// Destruktor zwalniający pamięć
 Separatechaining::~Separatechaining() {
     for (int i = 0; i < capacity; ++i) {
         clearBST(table[i]);
@@ -14,7 +16,7 @@ Separatechaining::~Separatechaining() {
     delete[] table;
 }
 
-
+// Funkcja pomocnicza do wstawiania do drzewa BST
 BSTNode* Separatechaining::insertBST(BSTNode* root, int key, int value) {
     if (root == nullptr) {
         return new BSTNode(key, value);
@@ -26,10 +28,12 @@ BSTNode* Separatechaining::insertBST(BSTNode* root, int key, int value) {
         root->right = insertBST(root->right, key, value);
     }
     else {
-        root->value = value; // Aktualizacja warto�ci je�li klucz ju� istnieje
+        root->value = value; // Aktualizacja wartości jeśli klucz już istnieje
     }
     return root;
 }
+
+// Funkcja pomocnicza do przeglądania drzewa BST w kolejności inorder
 void Separatechaining::inorderTraversal(BSTNode* root, vector<pair<int, int>>& elements) const {
     if (root == nullptr) {
         return;
@@ -38,9 +42,11 @@ void Separatechaining::inorderTraversal(BSTNode* root, vector<pair<int, int>>& e
     elements.push_back(make_pair(root->key, root->value));
     inorderTraversal(root->right, elements);
 }
+
+// Funkcja do zmiany rozmiaru tablicy
 void Separatechaining::resizetable() {
     int oldCapacity = capacity;
-    capacity *= 2;
+    capacity *= 2; // Zwiększenie rozmiaru tablicy
     BSTNode** oldTable = table;
 
     table = new BSTNode * [capacity];
@@ -63,6 +69,7 @@ void Separatechaining::resizetable() {
     delete[] oldTable;
 }
 
+// Funkcja pomocnicza do wyszukiwania w drzewie BST
 BSTNode* Separatechaining::searchBST(BSTNode* root, int key) const {
     if (root == nullptr || root->key == key) {
         return root;
@@ -75,6 +82,7 @@ BSTNode* Separatechaining::searchBST(BSTNode* root, int key) const {
     }
 }
 
+// Funkcja pomocnicza do usuwania z drzewa BST
 BSTNode* Separatechaining::removeBST(BSTNode* root, int key) {
     if (root == nullptr) {
         return root;
@@ -104,6 +112,7 @@ BSTNode* Separatechaining::removeBST(BSTNode* root, int key) {
     return root;
 }
 
+// Funkcja pomocnicza do znajdowania minimalnego elementu w drzewie BST
 BSTNode* Separatechaining::findMin(BSTNode* root) const {
     while (root && root->left != nullptr) {
         root = root->left;
@@ -111,6 +120,7 @@ BSTNode* Separatechaining::findMin(BSTNode* root) const {
     return root;
 }
 
+// Funkcja pomocnicza do czyszczenia drzewa BST
 void Separatechaining::clearBST(BSTNode* root) {
     if (root == nullptr) {
         return;
@@ -119,6 +129,8 @@ void Separatechaining::clearBST(BSTNode* root) {
     clearBST(root->right);
     delete root;
 }
+
+// Funkcja dodająca losowe pary klucz-wartość do tablicy
 void Separatechaining::addrand(int number) {
     set<int> uniqueKeys;
     int randkey;
@@ -145,8 +157,9 @@ void Separatechaining::addrand(int number) {
     }
 }
 
+// Funkcja wstawiająca parę klucz-wartość do tablicy
 bool Separatechaining::insert(int key, int value) {
-    if (elements >= (capacity * 2.5)) {
+    if (elements >= (capacity * 2.5)) { // Zwiększenie rozmiaru tablicy jeśli jest pełna
         resizetable();
     }
     int hash = key % capacity;
@@ -155,6 +168,7 @@ bool Separatechaining::insert(int key, int value) {
     return true;
 }
 
+// Funkcja wyszukująca wartość na podstawie klucza
 bool Separatechaining::search(int key, int& value) const {
     int hash = key % capacity;
     BSTNode* node = searchBST(table[hash], key);
@@ -165,12 +179,14 @@ bool Separatechaining::search(int key, int& value) const {
     return false;
 }
 
+// Funkcja usuwająca element na podstawie klucza
 bool Separatechaining::remove(int key) {
     int hash = key % capacity;
     table[hash] = removeBST(table[hash], key);
     return true;
 }
 
+// Funkcja wyświetlająca zawartość tablicy mieszającej
 void Separatechaining::display() const {
     for (int i = 0; i < capacity; ++i) {
         cout << "Bucket " << i << ": ";
@@ -178,6 +194,8 @@ void Separatechaining::display() const {
         cout << endl;
     }
 }
+
+// Funkcja sprawdzająca czy element istnieje w tablicy
 bool Separatechaining::exists(int key) {
     int hash = key % capacity;
     BSTNode* node = searchBST(table[hash], key);
@@ -187,6 +205,7 @@ bool Separatechaining::exists(int key) {
     return false;
 }
 
+// Funkcja pomocnicza do wyświetlania drzewa BST
 void Separatechaining::displayBST(BSTNode* root) const {
     if (root != nullptr) {
         displayBST(root->left);
@@ -194,6 +213,8 @@ void Separatechaining::displayBST(BSTNode* root) const {
         displayBST(root->right);
     }
 }
+
+// Funkcja czyszcząca tablicę
 void Separatechaining::clear() {
     for (int i = 0; i < capacity; ++i) {
         clearBST(table[i]);
