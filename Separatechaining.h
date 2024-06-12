@@ -10,10 +10,9 @@
 #include <fstream>
 #include <chrono>
 
-
-
-
 using namespace std;
+
+// Struktura węzła drzewa BST
 struct BSTNode {
     int key;
     int value;
@@ -46,11 +45,7 @@ public:
     bool remove(int key);
     bool exists(int key);
     void display() const;
-
     void clear();
-
-
-
 };
 
 #endif
