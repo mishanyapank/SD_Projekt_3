@@ -10,7 +10,8 @@
 #include <conio.h>
 
 using namespace std;
-const int TABLE_SIZE = 10;
+
+const int TABLE_SIZE = 10; // Domyślny rozmiar tablicy
 
 class Openchaining {
 private:
